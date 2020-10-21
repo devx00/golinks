@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block title %}URL Shortener{% endblock %}
+{% block content %}
+  <a href="{% url 'new-link' %}">Create a Shortened Link</a>
+  <h2>Popular Links</h2>
+   <ul>
+    {% for link in links %}
+      <li>
+        <h3><a href="/{{ link.slug }}">{{ link.slug }}</a></h3>
+        Visitors: {{ link.click_count }}
+      </li>
+    {% endfor %}
+    </ul>
+{% endblock %}

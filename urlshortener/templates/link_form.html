@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block title %}URL Shortener{% endblock %}
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_form_errors form %}
+    {% bootstrap_form form %}
+  {% buttons %}
+    <button type="submit" class="btn btn-primary">
+      Submit
+    </button>
+  {% endbuttons %}
+</form>
+
+{% endblock %}
