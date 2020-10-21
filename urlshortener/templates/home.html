@@ -1,16 +1,43 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
-{% block title %}URL Shortener{% endblock %}
+{% load rest_framework %}
 {% block content %}
+<div class="container mt-4">
+  <div class="container container-fluid">
+    <form class="form-inline" action="{% url 'link-list' %}" method="POST">
+      {% csrf_token %}
+      {% render_form serializer %}
+      <button type="submit" class="btn btn-primary mb-2" value="save">Create</button>
+    </form>
 
-  <a href="{% url 'new-link' %}">Create a Shortened Link</a>
-  <h2>Popular Links</h2>
-   <ul>
-    {% for link in links %}
-      <li>
-        <h3><a href="/{{ link.slug }}">{{ link.slug }}</a></h3>
-        Visitors: {{ link.click_count }}
-      </li>
-    {% endfor %}
-    </ul>
+  </div>
+  <h5>Popular Links</h5>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">slug</th>
+        <th scope="col">user</th>
+        <th scope="col">clicks</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+      <tr>
+        <th scope="row">
+          <a class="btn" href="{% url 'link-detail' link.slug %}"> {{ link.slug }} </a>
+        </th>
+        <td>
+          {% if link.owner %}
+          <a class="btn" href="{% url 'user-detail' link.owner %}"> {{ link.owner }} </a>
+          {% endif %}
+        </td>
+        <td>
+          {{ link.click_count }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

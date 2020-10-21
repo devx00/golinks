@@ -5,21 +5,17 @@ from django.http.response import Http404
 from django.urls import resolve, get_resolver
 from django.utils.translation import gettext_lazy as _
 
+slug_blacklist = [ "auth", "home", "links", "users" ]
 
 def slug_validator(slug):
-    """Make sure that /[slug] and /[slug]/ don't conflict with other routes"""
+    """Make sure slug doesnt match any existing paths."""
     # This is really not ideal. But it is the easiest way I have found 
     # to dynamically check for a conflict.
-    for path in [f"/{slug}", f"/{slug}/"]:
-        try:
-            resolve(path)
-        except Http404:
-            continue
-        else:
-            raise ValidationError(
-                _('Slug \'%(slug)s\' conflicts with existing path.'),
-                params={'slug': slug},
-            )
+    if slug.lower() in slug_blacklist:
+        raise ValidationError(
+            _('Slug \'%(slug)s\' conflicts with existing path.'),
+            params={'slug': slug},
+        )
 
 
 class Link(models.Model):

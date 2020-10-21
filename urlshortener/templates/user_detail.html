@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load bootstrap_pagination %}
+{% block content %}
+<div class="mt-4 container">
+    <h3>User: {{username}}</h3>
+
+<section>
+    <h5>Links</h5>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">slug</th>
+            <th scope="col">user</th>
+            <th scope="col">clicks</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for link in links %}
+        <tr>
+            <th scope="row">
+                <a class="btn" href="{% url 'link-detail' link.slug %}"> {{ link.slug }} </a>
+            </th>
+            <td>
+                {% if link.owner %}
+                <a class="btn" href="{% url 'user-detail' link.owner %}"> {{ link.owner }} </a>
+                {% endif %}
+            </td>
+            <td>
+                {{ link.click_count }}
+            </td>
+            <td>
+                {% if username == user.username %}
+                    <button type="button" class="btn btn-danger">Delete</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</section>
+</div>
+{% endblock %}

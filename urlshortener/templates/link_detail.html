@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load rest_framework %}
+{% block content %}
+<div class="mt-4 container">
+<table class="table table-sm">
+    <tbody>
+        <tr>
+            <th scope="row">
+               slug
+            </th>
+            <td>
+                <a class="btn" href="{% url 'link-detail' slug %}"> {{ slug }} </a>
+            </td>
+        </tr>
+          <tr>
+            <th scope="row">
+               owner
+            </th>
+            <td>
+                {% if owner %}
+                <a class="btn" href="{% url 'user-detail' owner %}"> {{ owner }} </a>
+                {% endif %}
+            </td>
+        </tr>
+          <tr>
+            <th scope="row">
+               clicks
+            </th>
+            <td>
+               {{ click_count }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+{% endblock %}

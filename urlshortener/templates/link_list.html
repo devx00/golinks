@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load bootstrap_pagination %}
+{% block content %}
+<div class="mt-4 container align-right">
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+      {% if previous %} 
+      <li class="page-item"><a class="page-link" href="{{ previous }}" >Previous</a></li> 
+      {% else %}
+    <li class="page-item disabled"><a class="page-link disabled" href="#" disabled aria-disabled="disabled">Previous</a></li>
+    {% endif %}
+      {% if next %} 
+      <li class="page-item"><a class="page-link" href="{{ next }}" >Next</a></li> 
+      {% else %}
+    <li class="page-item disabled"><a class="page-link disabled" href="#" disabled aria-disabled="disabled">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">slug</th>
+            <th scope="col">user</th>
+            <th scope="col">clicks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for link in results %}
+        <tr>
+            <th scope="row">
+                <a class="btn" href="{% url 'link-detail' link.slug %}"> {{ link.slug }} </a>
+            </th>
+            <td>
+                {% if link.owner %}
+                <a class="btn" href="{% url 'user-detail' link.owner %}"> {{ link.owner }} </a>
+                {% endif %}
+            </td>
+            <td>
+                {{ link.click_count }}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

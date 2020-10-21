@@ -1,5 +1,7 @@
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet, ViewSet
 from urlshortener.permissions import IsOwnerOrReadOnly
 from urlshortener.models import Link
 from urlshortener.serializers import LinkSerializer, UserSerializer
@@ -10,8 +12,12 @@ from urlshortener.forms import LinkForm
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.pagination import PageNumberPagination
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class NumberPagination(PageNumberPagination):
+    page_size = 10
+
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [OrderingFilter, SearchFilter, DjangoFilterBackend]
@@ -20,9 +26,15 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['username', 'email']
     filterset_fields = ['username', 'email']
     lookup_field = "username"
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'user.html'
+    template_name = 'user_detail.html'
+    list_template_name = 'user_list.html'
+    pagination_class = NumberPagination
 
+    def get_template_names(self):
+        if self.action == 'list':
+            return [self.list_template_name]
+        else:
+            return [self.template_name]
 
     def get_object(self):
         username = self.kwargs.get('username')
@@ -34,6 +46,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
                 return self.request.user
         return super(UserViewSet, self).get_object()
 
+
 class LinkViewSet(viewsets.ModelViewSet):
     queryset = Link.objects.all()
     serializer_class = LinkSerializer
@@ -44,6 +57,17 @@ class LinkViewSet(viewsets.ModelViewSet):
     filterset_fields = ['owner']
     search_fields = ['slug', 'url', 'owner']
     lookup_field = 'slug'
+    template_name = 'link_detail.html'
+    list_template_name = 'link_list.html'
+    pagination_class = NumberPagination
+
+
+            
+    def get_template_names(self):
+        if self.action == 'list':
+            return [self.list_template_name]
+        else:
+            return [self.template_name]
 
     def perform_create(self, serializer):
         if type(self.request.user) is AnonymousUser:
@@ -54,7 +78,8 @@ class LinkViewSet(viewsets.ModelViewSet):
 
 def home(request):
     links = Link.objects.order_by("-click_count")[:20]
-    return render(request, 'home.html', {'links': links})
+    serializer = LinkSerializer()
+    return render(request, 'home.html', {'links': links, 'serializer': serializer})
 
 def new_link(request):
     if request.method == 'POST':
